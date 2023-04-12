@@ -6,10 +6,10 @@ from CRUD.models import Factura, Cliente, PagoFactura
 
 @admin.register(Factura)
 class FacturaAdmin(admin.ModelAdmin):
-    list_display = ("id_cliente", "fecha", "saldo")
+    list_display = ("cliente", "fecha", "saldo")
     exclude = ("saldo",)
     search_fields = (
-        "id_cliente",
+        "cliente",
         "fecha",
     )
     list_filter = ("fecha",)
@@ -23,6 +23,6 @@ class ClienteAdmin(admin.ModelAdmin):
 
 @admin.register(PagoFactura)
 class PagoFactura(admin.ModelAdmin):
-    list_display = ("pk", "id_factura", "fecha", "valor")
-    search_fields = ("id_factura", "fecha", "valor")
+    list_display = ("pk", "factura", "fecha", "valor")
+    search_fields = ("factura", "fecha", "valor")
     list_filter = ("fecha",)
