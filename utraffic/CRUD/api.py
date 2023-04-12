@@ -112,7 +112,7 @@ def create_factura(request, factura: FacturaCreate):
     response={200: FacturaBase, 404: NotFoundSchema},
     tags=["Factura"],
 )
-def change_cliente(request, factura_id: int, data: FacturaCreate):
+def change_factura(request, factura_id: int, data: FacturaCreate):
     try:
         factura = Factura.objects.get(pk=factura_id)
         for attribute, value in data.dict().items():
@@ -128,7 +128,7 @@ def change_cliente(request, factura_id: int, data: FacturaCreate):
 @api.delete(
     "/factura/{factura_id}",
     response={200: None, 404: NotFoundSchema},
-    tags=["factura"],
+    tags=["Factura"],
 )
 def delete_factura(request, factura_id: int):
     try:
@@ -140,3 +140,61 @@ def delete_factura(request, factura_id: int):
 
 
 # PagoFactura
+
+
+@api.get("/pago", response=List[PagoFacturaBase], tags=["Pago Factura"])
+def pagos(request):
+    return PagoFactura.objects.all()
+
+
+@api.get(
+    "/pago/{pago_id}",
+    response={200: PagoFacturaBase, 404: NotFoundSchema},
+    tags=["Pago Factura"],
+)
+def pago(request, pago_id: int):
+    try:
+        pago = PagoFactura.objects.get(pk=pago_id)
+        return 200, pago
+    except Factura.DoesNotExist as e:
+        return 404, {"message": "La factura no existe"}
+
+
+@api.post("/pago", response={201: PagoFacturaCreate}, tags=["Pago Factura"])
+def create_pago(request, pago: PagoFacturaCreate):
+    factura_id = pago.factura
+    factura = Factura.objects.get(pk=factura_id)
+    pago = PagoFactura.objects.create(factura=factura, **pago.dict(exclude={"factura"}))
+    return pago
+
+
+@api.put(
+    "/pago/{pago_id}",
+    response={200: PagoFacturaBase, 404: NotFoundSchema},
+    tags=["Pago Factura"],
+)
+def change_pago(request, pago_id: int, data: PagoFacturaCreate):
+    try:
+        pago = PagoFactura.objects.get(pk=pago_id)
+        for attribute, value in data.dict().items():
+            if attribute == "factura":
+                value = Factura.objects.get(pk=value)
+            setattr(pago, attribute, value)
+        pago.save()
+        return 200, pago
+    except Cliente.DoesNotExist as e:
+        return 404, {"message": "No se registra pago."}
+
+
+@api.delete(
+    "/pago/{pago_id}",
+    response={200: None, 404: NotFoundSchema},
+    tags=["Pago Factura"],
+)
+def delete_pago(request, pago_id: int):
+    try:
+        pago = PagoFactura.objects.get(pk=pago_id)
+        pago.delete()
+        return 200
+    except factura.DoesNotExist as e:
+        return 404, {"message": "No existe el pago."}
