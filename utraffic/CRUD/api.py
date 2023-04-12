@@ -39,9 +39,104 @@ def cliente(request, cliente_id: int):
         return 404, {"message": "El cliente no existe"}
 
 
-# def create_cliente(request, payload: ClienteSchema):
+@api.post("/cliente", response={201: ClienteCreate}, tags=["Cliente"])
+# @api.post("/cliente", response={201: ClienteSchemaCreate}, tags=["Cliente"])
+def create_cliente(request, cliente: ClienteCreate):
+    cliente = Cliente.objects.create(**cliente.dict())
+    return cliente
 
 
-@api.get("/hello")
-def hello(request):
-    return "Hello World"
+@api.put(
+    "/cliente/{cliente_id}",
+    response={200: ClienteCreate, 404: NotFoundSchema},
+    tags=["Cliente"],
+)
+def change_cliente(request, cliente_id: int, data: ClienteCreate):
+    try:
+        cliente = Cliente.objects.get(pk=cliente_id)
+        for attribute, value in data.dict().items():
+            setattr(cliente, attribute, value)
+        cliente.save()
+        return 200, cliente
+    except Cliente.DoesNotExist as e:
+        return 404, {"message": "El cliente no existe"}
+
+
+@api.delete(
+    "/cliente/{cliente_id}",
+    response={200: None, 404: NotFoundSchema},
+    tags=["Cliente"],
+)
+def delete_cliente(request, cliente_id: int):
+    try:
+        cliente = Cliente.objects.get(pk=cliente_id)
+        cliente.delete()
+        return 200
+    except Cliente.DoesNotExist as e:
+        return 404, {"message": "El cliente no existe"}
+
+
+# Factura
+
+
+@api.get("/factura", response=List[FacturaBase], tags=["Factura"])
+def facturas(request):
+    return Factura.objects.all()
+
+
+@api.get(
+    "/factura/{factura_id}",
+    response={200: FacturaBase, 404: NotFoundSchema},
+    tags=["Factura"],
+)
+def factura(request, factura_id: int):
+    try:
+        factura = Factura.objects.get(pk=factura_id)
+        return 200, factura
+    except Factura.DoesNotExist as e:
+        return 404, {"message": "La factura no existe"}
+
+
+@api.post("/factura", response={201: FacturaCreate}, tags=["Factura"])
+def create_factura(request, factura: FacturaCreate):
+    cliente_id = factura.cliente
+    cliente = Cliente.objects.get(pk=cliente_id)
+    factura = Factura.objects.create(
+        cliente=cliente, **factura.dict(exclude={"cliente"})
+    )
+    return factura
+
+
+@api.put(
+    "/factura/{factura_id}",
+    response={200: FacturaBase, 404: NotFoundSchema},
+    tags=["Factura"],
+)
+def change_cliente(request, factura_id: int, data: FacturaCreate):
+    try:
+        factura = Factura.objects.get(pk=factura_id)
+        for attribute, value in data.dict().items():
+            if attribute == "cliente":
+                value = Cliente.objects.get(pk=value)
+            setattr(factura, attribute, value)
+        factura.save()
+        return 200, factura
+    except Cliente.DoesNotExist as e:
+        return 404, {"message": "La factura no existe"}
+
+
+@api.delete(
+    "/factura/{factura_id}",
+    response={200: None, 404: NotFoundSchema},
+    tags=["factura"],
+)
+def delete_factura(request, factura_id: int):
+    try:
+        factura = Factura.objects.get(pk=factura_id)
+        factura.delete()
+        return 200
+    except factura.DoesNotExist as e:
+        return 404, {"message": "El factura no existe"}
+
+
+# PagoFactura
