@@ -26,7 +26,13 @@ SECRET_KEY = "django-insecure-&_-3@_1(9a&ivbp1@8*zd1kg@f+jrb__t$$#+2-%m)o#x67jsl
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://172.17.7.221:8081"
+    # Añade aquí las URLs desde las que permitirás el acceso a tu API
+]
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -37,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "ninja",
     "CRUD",
 ]
@@ -49,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "utraffic.urls"
