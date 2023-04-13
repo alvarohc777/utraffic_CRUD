@@ -32,8 +32,18 @@ ClienteCreate = create_schema(Cliente, fields=["nombre", "direccion", "telefono"
 
 
 FacturaBase = create_schema(
-    Factura, fields=["id", "cliente", "fecha", "valor", "comentarios", "saldo"]
+    Factura,
+    fields=[
+        "id",
+        "cliente",
+        "fecha",
+        "valor",
+        "comentarios",
+        "saldo",
+    ],
 )
+
+
 FacturaCreate = create_schema(
     Factura, fields=["cliente", "fecha", "valor", "comentarios", "saldo"]
 )
