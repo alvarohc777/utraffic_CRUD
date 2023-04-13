@@ -45,7 +45,9 @@ class PagoFactura(models.Model):
         return f"{self.factura} - {self.fecha}"
 
     def save(self, *args, **kwargs):
+        if not self.id:
+            self.factura.saldo -= self.valor
+            self.factura.save(update_fields=["saldo"])
         super().save(*args, **kwargs)
-        self.factura.saldo -= self.valor
-        self.factura.save(update_fields=["saldo"])
+
         # self.id_factura.save
