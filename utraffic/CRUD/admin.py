@@ -23,6 +23,6 @@ class ClienteAdmin(admin.ModelAdmin):
 
 @admin.register(PagoFactura)
 class PagoFactura(admin.ModelAdmin):
-    list_display = ("pk", "factura", "fecha", "valor")
+    list_display = ("factura", "fecha", "valor")
     search_fields = ("factura", "fecha", "valor")
     list_filter = ("fecha",)
